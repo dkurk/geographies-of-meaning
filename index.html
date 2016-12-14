@@ -1,9 +1,9 @@
 <h1>Geograhies of Meaning Multimedia View</h1>
 
-<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
-<script src="datamaps.world.min.js"></script>
-<script src="jquery-3.1.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+<script src="//datamaps.world.min.js"></script>
+<script src="//jquery-3.1.1.js"></script>
 
 <div id="container" style="position: relative; width: 1125px; height: 675px;"></div>
 
@@ -258,7 +258,7 @@ function subtract_year() {
 }
 
 function updateBubbles() {
-  d3.csv("media_12_10.csv", function(csv) {
+  d3.csv("//media_12_10.csv", function(csv) {
 
     csv = csv.filter(function(row) {
       return parseInt(row['year']) == parseInt($('#slider').val());
