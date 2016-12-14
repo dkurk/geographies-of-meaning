@@ -1,0 +1,325 @@
+<h1>Geograhies of Meaning Multimedia View</h1>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+<script src="datamaps.world.min.js"></script>
+<script src="jquery-3.1.1.js"></script>
+
+<div id="container" style="position: relative; width: 1125px; height: 675px;"></div>
+
+<div style="color:red; margin-left: 575px;" id="time-year">1914</div>
+<input type="button" value="-" onClick="subtract_year()">
+1914 <input type="range" min="1914" max="1941" value="1914" id="slider" style="width: 1075px;" /> 1941
+<input type="button" value="+" onClick="add_year()">
+
+<script>
+
+/*var dataset = [
+  {label: 'Homeland', count: 20},
+  {label: 'Communism', count: 30},
+  {label: 'Empire', count: 10},
+  {label: 'Physical', count: 40}
+];
+
+var width = 360;
+var height = 360; 
+var radius = Math.min(width, height) / 2;
+
+var color = d3.scale.category20();
+
+var svg = d3.select('#chart')
+  .append('svg')
+  .attr('width', width)
+  .attr('height', height)
+  .append('g')
+  .attr('transform', 'translate(' + (width / 2) +  ',' + (height / 2) + ')');
+
+var arc = d3.svg.arc()
+  .innerRadius(0)
+  .outerRadius(radius);
+
+var pie = d3.layout.pie()
+  .value(function(d) { return d.count; })
+  .sort(null);
+
+var path = svg.selectAll('path')
+  .data(pie(dataset))
+  .enter()
+  .append('path')
+  .attr('d', arc)
+  .attr('fill', function(d, i) {
+    return color(d.data.label);
+  });*/
+// Set scales for opacity and color
+
+/*var o = d3.scale.linear().domain([0, 1000]).range([.5, 1]);
+var c = d3.scale.category10().domain(["Marxism", "Nostalgia", "Homeland", "Nature", "Religion"]);*/
+
+// Load with Datamaps
+
+/*
+function rescaleWorld(datamap) {
+  datamap.svg
+    .selectAll('g')
+    .attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')');
+}
+
+function rescaleBubbles(datamap) {
+  var bubbleRadius = 4;
+  var bubbleBorder = 15;
+
+  datamap.svg
+    .selectAll('.datamaps-bubble')
+    .attr('r', bubbleRadius / d3.event.scale)
+    .style('stroke-width', (bubbleBorder / d3.event.scale) + 'px');
+}
+
+var map = new Datamap({
+  element: document.getElementById('container'),
+  scope: 'world',
+    geographyConfig: {
+        highlightOnHover: false,
+        borderColor: '#444',
+        borderWidth: 0.5
+    },
+  data: {},
+  fills: {
+        'marina': 'red',
+        'boris': 'blue',
+        'vlad': 'green', 
+        'osip': 'orange',
+        'anna': 'purple',
+        defaultFill: 'grey'
+  },
+  done: function(datamap) {
+    datamap.svg.call(d3.behavior.zoom().on('zoom', redraw));
+
+    function redraw() {
+      datamap.svg.select('g')
+        .selectAll('path')
+        .style('vector-effect', 'non-scaling-stroke');
+
+      rescaleWorld(datamap);
+      rescaleBubbles(datamap);
+    }
+  }
+});*/
+
+var map = new Datamap({
+    element: document.getElementById('container'),
+    scope: 'world',
+    geographyConfig: {
+        highlightOnHover: false,
+        popupTemplate: function(geo, data) {
+         return '';
+         return ['<div class="hoverinfo"><strong>',
+                  geo.properties.name,
+                  '<br/>',
+                  '</strong></div>'].join('');
+        },
+        borderColor: '#444',
+        borderWidth: 1.5
+    },
+    data: {
+      'RUS': {fillKey: 'visited'},
+      'USA': {fillKey: 'visited'},
+      'FRA': {fillKey: 'visited'},
+      'GEO': {fillKey: 'visited'},
+      'DEU': {fillKey: 'visited'},
+      'GBR': {fillKey: 'visited'},
+      'UKR': {fillKey: 'visited'},
+      'BLR': {fillKey: 'visited'},
+      'CZE': {fillKey: 'visited'},
+      'ARM': {fillKey: 'visited'},
+      'KAZ': {fillKey: 'visited'},
+      'TKM': {fillKey: 'visited'},
+      'KGZ': {fillKey: 'visited'},
+      'TJK': {fillKey: 'visited'},
+      'LTU': {fillKey: 'visited'},
+      'LVA': {fillKey: 'visited'},
+      'MDA': {fillKey: 'visited'},
+      'MEX': {fillKey: 'visited'}
+    },
+    bubblesConfig: {
+      fillOpacity: 0.50,
+      borderWidth: 0.5,
+      animate: true
+    },
+    /*setProjection: function(element, options) {
+      var projection = d3.geo.equirectangular()
+        //.center([55.7558, 37.6173])
+        .center([55.7558, 60])
+        .scale(150);
+        //.translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+
+        var path = d3.geo.path()
+          .projection(projection);
+
+        return {path: path, projection: projection};
+    },*/
+    fills: {
+        'marina': '#e6008a',
+        'boris': 'blue',
+        'vlad': 'green', 
+        'osip': '#eaff00',
+        'anna': 'purple',
+        'nab': '#ff2602',
+        'visited': '#e6ccff',
+        'defaultFill': 'white'
+    }
+});
+
+updateBubbles();
+
+/*d3.csv("media_data.csv", function(csv) {
+
+    csv.sort(function(a, b) {
+      return d3.ascending(+a.year, +b.year);
+    });
+
+    csv = csv.filter(function(row) {
+      return parseInt(row['year']) == parseInt($('#slider').val());
+    });
+
+    console.log(csv);
+    map.bubbles(csv, {
+    popupTemplate: function (geo, data) {
+
+              if (data.image != "") {
+                  return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><img src="' + data.image + '" style="width:100px;height:100px">',
+                  '</div>'].join('');
+              
+              }
+
+              if (data.rec != "") {
+                return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><audio controls autoplay><source src="' + data.rec + '" type="audio/mpeg">',
+                  '</div>'].join('');
+              }
+
+              if (data.video != "") {
+                return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><video width="200px" height="200px" controls autoplay><source src="' + data.video + '" type="video/mp4"</video>',
+                  '</div>'].join('');
+              }
+
+        }
+    });
+})*/
+
+$('#slider').on('change',function(){
+    var val = $(this).val();
+    console.log(val);
+    $("#time-year").text(val);
+    updateBubbles();
+});
+
+/*d3.selectAll(".datamaps-bubble")
+    .transition()
+    .style("fill", "red")
+    .duration(2000);*/
+
+$(map.svg[0][0]).on('click', '.bubbles', function(e) {
+  console.log(e.target);
+});
+
+$('body').keyup(function(e){
+   //if(e.keyCode == 13){
+   console.log(e.keyCode);
+   if (e.keyCode == 90) {
+       // user has pressed enter
+       subtract_year();
+   }
+   //if(e.keyCode == 32){
+   if (e.keyCode == 77) {
+       // user has pressed space
+       add_year();
+   }
+});
+
+
+function add_year() {
+  var newYear = $('#slider').val(parseInt($('#slider').val()) + 1);
+  $("#time-year").text(newYear.val());
+  updateBubbles();
+}
+
+function subtract_year() {
+  var newYear = $('#slider').val(parseInt($('#slider').val()) - 1);
+  $("#time-year").text(newYear.val());
+  updateBubbles();
+}
+
+function updateBubbles() {
+  d3.csv("media_12_10.csv", function(csv) {
+
+    csv = csv.filter(function(row) {
+      return parseInt(row['year']) == parseInt($('#slider').val());
+    });
+
+    csv.sort(function(a, b) {
+      return d3.ascending(+a.latitude, +b.latitude);
+    });
+
+    var i = 15;
+    var prevLocation = null;
+    csv.forEach(function(row) {
+      if (prevLocation != null && row.location != prevLocation) {
+        i = 15;
+      }
+      prevLocation = row.location;
+      row.radius = i;
+      i = i - 3;
+    });
+
+    console.log(csv);
+    map.bubbles(csv, {
+    popupTemplate: function (geo, data) {
+
+              if (data.image != "") {
+                  return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><img src="' + data.image + '" style="width:250px;height:250px">',
+                  '<br/>' + data.description + '',
+                  '</div>'].join('');
+              
+              }
+
+              else if (data.rec != "") {
+                return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><audio controls autoplay><source src="' + data.rec + '" type="audio/mpeg">',
+                  '<br/>' + data.description + '',
+                  '</div>'].join('');
+              }
+
+              else if (data.video != "") {
+                return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><video width="200px" height="200px" controls autoplay><source src="' + data.video + '" type="video/mp4"</video>',
+                  '<br/>' + data.description + '',
+                  '</div>'].join('');
+              }
+
+              else {
+                return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '</div>'].join('');
+              }
+
+        }
+    });
+  })
+}
+</script>
