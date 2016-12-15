@@ -173,7 +173,12 @@ function advanceChapter() {
           return (parseInt(row['year']) == parseInt($('#current-year').text()));
         });
       }
-      $('#chapter').text('0');
+      $('#chapter').text('1');
+      currentChapterCsv = csv.filter(function(row) {
+        return (parseInt(row['year']) == parseInt($('#current-year').text())) &&
+               (parseInt(row['order']) == parseInt($('#chapter').text()));
+      });
+
     }
 
     console.log(currentChapterCsv);
