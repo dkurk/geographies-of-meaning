@@ -115,7 +115,7 @@ function advanceChapter() {
   d3.csv(storyFile, function(csv) {
 
     csv.sort(function(a, b) {
-      return d3.ascending(+a.year, +b.year)
+      return d3.ascending(+a.year, +b.year);
     });
 
     $('#chapter').text(parseInt($('#chapter').text()) + 1);
@@ -192,6 +192,7 @@ function toggleMayakovsky() {
   $('#chapter').text('0');
 
   whichPoet = "maya";
+}
 
 function toggleMandelshtam() {
   $(".poet").css("background-color", "");
