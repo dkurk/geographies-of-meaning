@@ -72,20 +72,6 @@ var map = new Datamap({
     }
 });
 
-/*
-$('#slider').on('change',function(){
-    var val = $(this).val();
-    console.log(val);
-    $("#time-year").text(val);
-    updateBubbles();
-});
-*/
-
-/*d3.selectAll(".datamaps-bubble")
-    .transition()
-    .style("fill", "red")
-    .duration(2000);*/
-
 var whichPoet; 
 
 $('body').keyup(function(e) {
@@ -127,11 +113,6 @@ function advanceChapter() {
   }
 
   d3.csv(storyFile, function(csv) {
-    /*
-    csv = csv.filter(function(row) {
-      return row['name'] == 'Vladimir Mayakovsky' 
-    });
-    */
 
     csv.sort(function(a, b) {
       return d3.ascending(+a.year, +b.year)
@@ -174,11 +155,11 @@ function advanceChapter() {
         });
       }
       $('#chapter').text('1');
+
       currentChapterCsv = csv.filter(function(row) {
         return (parseInt(row['year']) == parseInt($('#current-year').text())) &&
                (parseInt(row['order']) == parseInt($('#chapter').text()));
       });
-
     }
 
     console.log(currentChapterCsv);
