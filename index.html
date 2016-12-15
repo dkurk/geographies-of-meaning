@@ -258,7 +258,7 @@ function subtract_year() {
 }
 
 function updateBubbles() {
-  d3.csv("media_12_10.csv", function(csv) {
+  d3.csv("media_12_15.csv", function(csv) {
 
     csv = csv.filter(function(row) {
       return parseInt(row['year']) == parseInt($('#slider').val());
