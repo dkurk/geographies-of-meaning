@@ -1,0 +1,450 @@
+<h1>Geograhies of Meaning Story View</h1>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+<script src="datamaps.world.min.js"></script>
+<script src="jquery-3.1.1.js"></script>
+
+<input class ="poet" id="maya" type="button" value="Mayakovsky" onClick="toggleMayakovsky()"> 
+<input class ="poet" id="mand" type="button" value="Mandelshtam" onClick="toggleMandelshtam()">
+<input class ="poet" id="akhm" type="button" value="Akhmatova" onClick="toggleAkhmatova()">
+<input class ="poet" id="nabo" type="button" value="Nabokov" onClick="toggleNabokov()">
+<input class ="poet" id="tsve" type="button" value="Tsvetavea" onClick="toggleTsvetaeva()">
+<input class ="poet" id="past" type="button" value="Pasternak" onClick="togglePasternak()" >
+
+<h2><div id="current-year">1914</div><div id="chapter">0</div></h2>
+
+<div id="container" style="position: relative; width: 833px; height: 500px;"></div>
+
+<h2 style="color: red;"><div id="narrative"></div></h2>
+
+<script>
+
+var map = new Datamap({
+    element: document.getElementById('container'),
+    scope: 'world',
+    geographyConfig: {
+        highlightOnHover: false,
+        popupTemplate: function(geo, data) {
+         return '';
+         return ['<div class="hoverinfo"><strong>',
+                  geo.properties.name,
+                  '<br/>',
+                  '</strong></div>'].join('');
+        },
+        borderColor: '#444',
+        borderWidth: 1.5
+    },
+    data: {
+      'RUS': {fillKey: 'visited'},
+      'USA': {fillKey: 'visited'},
+      'FRA': {fillKey: 'visited'},
+      'GEO': {fillKey: 'visited'},
+      'DEU': {fillKey: 'visited'},
+      'GBR': {fillKey: 'visited'},
+      'UKR': {fillKey: 'visited'},
+      'BLR': {fillKey: 'visited'},
+      'CZE': {fillKey: 'visited'},
+      'ARM': {fillKey: 'visited'},
+      'KAZ': {fillKey: 'visited'},
+      'TKM': {fillKey: 'visited'},
+      'KGZ': {fillKey: 'visited'},
+      'TJK': {fillKey: 'visited'},
+      'LTU': {fillKey: 'visited'},
+      'LVA': {fillKey: 'visited'},
+      'MDA': {fillKey: 'visited'},
+      'MEX': {fillKey: 'visited'}
+    },
+    bubblesConfig: {
+      fillOpacity: 0.50,
+      borderWidth: 0.5,
+      animate: true
+    },
+    fills: {
+        'marina': '#e6008a',
+        'boris': 'blue',
+        'vlad': 'green', 
+        'osip': '#eaff00',
+        'anna': 'purple',
+        'nab': '#ff2602',
+        'visited': '#e6ccff',
+        'defaultFill': 'white'
+    }
+});
+
+/*
+$('#slider').on('change',function(){
+    var val = $(this).val();
+    console.log(val);
+    $("#time-year").text(val);
+    updateBubbles();
+});
+*/
+
+/*d3.selectAll(".datamaps-bubble")
+    .transition()
+    .style("fill", "red")
+    .duration(2000);*/
+
+$(map.svg[0][0]).on('click', '.bubbles', function(e) {
+  console.log(e.target);
+});
+
+function add_year() {
+  var newYear = $('#slider').val(parseInt($('#slider').val()) + 1);
+  $("#time-year").text(newYear.val());
+  updateBubbles();
+}
+
+function subtract_year() {
+  var newYear = $('#slider').val(parseInt($('#slider').val()) - 1);
+  $("#time-year").text(newYear.val());
+  updateBubbles();
+}
+
+function updateBubbles() {
+  d3.csv("media_12_10.csv", function(csv) {
+
+    csv = csv.filter(function(row) {
+      return parseInt(row['year']) == parseInt($('#slider').val());
+    });
+
+    csv.sort(function(a, b) {
+      return d3.ascending(+a.latitude, +b.latitude);
+    });
+
+    var i = 15;
+    var prevLocation = null;
+    csv.forEach(function(row) {
+      if (prevLocation != null && row.location != prevLocation) {
+        i = 15;
+      }
+      prevLocation = row.location;
+      row.radius = i;
+      i = i - 3;
+    });
+
+    console.log(csv);
+    map.bubbles(csv, {
+    popupTemplate: function (geo, data) {
+
+              if (data.image != "") {
+                  return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><img src="' + data.image + '" style="width:250px;height:250px">',
+                  '<br/>' + data.description + '',
+                  '</div>'].join('');
+              
+              }
+
+              else if (data.rec != "") {
+                return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><audio controls autoplay><source src="' + data.rec + '" type="audio/mpeg">',
+                  '<br/>' + data.description + '',
+                  '</div>'].join('');
+              }
+
+              else if (data.video != "") {
+                return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '<br/><video width="200px" height="200px" controls autoplay><source src="' + data.video + '" type="video/mp4"</video>',
+                  '<br/>' + data.description + '',
+                  '</div>'].join('');
+              }
+
+              else {
+                return ['<div class="hoverinfo">' +  data.name,
+                  '<br/>Location: ' + data.location + '',
+                  '<br/>Year: ' + data.year + '',
+                  '</div>'].join('');
+              }
+
+        }
+    });
+  })
+}
+
+var whichPoet; 
+
+$('body').keyup(function(e) {
+  if (e.keyCode == 32) {
+    // user has pressed space 
+
+    console.log($('#current-year').text());
+    console.log($('#chapter').text());
+
+    advanceChapter();
+  }
+});
+/*
+var spacePressed = false;
+$('body').keyup(function(e){
+   //if(e.keyCode == 13){
+  // console.log(e.keyCode);
+   //if (e.keyCode == 90) {
+       // user has pressed enter
+   //    subtract_year();
+  // }
+  if (e.keyCode == 32) {
+    // user has pressed space
+    spacePressed = true;
+  }
+});
+*/
+
+function waitForIt() {
+  if (!spacePressed) {
+    setTimeout(waitForIt, 2500);
+  }
+  else {
+    // space pressed
+    return true;
+  }
+}
+
+function startWait() {
+  return new Promise(waitForIt);
+}
+
+function advanceChapter() {
+
+  var storyFile;
+
+  switch(whichPoet) {
+    case "maya":
+      storyFile = "mayakovsky_story.csv";
+      break;
+    case "mand":
+      storyFile = "mandelshtam_story.csv";
+      break;
+    case "akhm":
+      storyFile = "akhmatova_story.csv";
+      break;
+    case "past":
+      storyFile = "pasternak_story.csv";
+      break;
+    case "nabo":
+      storyFile = "nabokov_story.csv";
+      break;
+    case "tsve":
+      storyFile = "tsvetaeva_story.csv";
+      break;
+    default: 
+      return;
+  }
+
+  d3.csv(storyFile, function(csv) {
+    /*
+    csv = csv.filter(function(row) {
+      return row['name'] == 'Vladimir Mayakovsky' 
+    });
+    */
+
+    csv.sort(function(a, b) {
+      return d3.ascending(+a.year, +b.year)
+    });
+
+    $('#chapter').text(parseInt($('#chapter').text()) + 1);
+
+    var currentChapterCsv = csv.filter(function(row) {
+      return (parseInt(row['year']) == parseInt($('#current-year').text())) &&
+             (parseInt(row['order']) == parseInt($('#chapter').text()));
+    });
+
+    // Add a statement if the year is 1941, that will stop further advancement 
+    
+    if (currentChapterCsv.length == 0) {
+      $('#current-year').text(parseInt($('#current-year').text()) + 1); 
+
+      var nextChapterCsv = csv.filter(function(row) {
+        return (parseInt(row['year']) == parseInt($('#current-year').text()));
+      });
+
+      console.log('next ch');
+      console.log(nextChapterCsv);
+
+      // Possibly check if new year has any entries, and then advance to next year
+      // So that we do not get paused in a certian year
+      while (nextChapterCsv.length == 0 && parseInt($('#current-year').text()) < 1941) {
+        $('#current-year').text(parseInt($('#current-year').text()) + 1); 
+        nextChapterCsv = csv.filter(function(row) {
+          return (parseInt(row['year']) == parseInt($('#current-year').text()));
+        });
+      }
+      $('#chapter').text('0');
+    }
+
+    console.log(currentChapterCsv);
+
+    map.bubbles(currentChapterCsv, {
+      popupTemplate: function (geo, data) {
+        return ['<div class="hoverinfo">' +  data.name,
+                '<br/>Location: ' + data.location + '',
+                '<br/>Year: ' + data.year + '',
+                '</div>'].join('');
+      }
+    });
+
+    if (currentChapterCsv.length != 0) {
+      $("#narrative").text(currentChapterCsv[0].narrative);
+    }
+    else {
+      $("#narrative").text('');
+    }
+      
+  });
+}
+
+function toggleMayakovsky() {
+  $(".poet").css("background-color", "");
+  $("#maya").css("background-color", "yellow");
+
+  $('#narrative').text('');
+  $('#current-year').text('1914'); 
+  $('#chapter').text('0');
+
+  whichPoet = "maya";
+
+
+
+//   d3.csv("dummy_story.csv", function(csv) {
+//     csv = csv.filter(function(row) {
+//       return row['name'] == 'Vladimir Mayakovsky' 
+//     });
+
+//     csv.sort(function(a, b) {
+//       return d3.ascending(+a.year, +b.year)
+//     });
+
+//     console.log(csv);
+
+//     currentYear = 1914;
+//     while (currentYear <= 1941) {
+
+//       currentYearCsv = csv.filter(function(row) {
+//         return parseInt(row['year']) == currentYear;
+//       });
+
+//       currentYearCsv.sort(function(a, b) {
+//        return d3.ascending(+a.order, +b.order);
+//       });
+
+//       console.log(currentYearCsv);
+
+      
+//       currentYearCsv.forEach(function(entry) {
+//         var encase = [ entry ];
+//         console.log(encase); 
+//         map.bubbles(encase, {
+//           popupTemplate: function (geo, data) {
+//             return ['<div class="hoverinfo">' +  data.name,
+//                     '<br/>Location: ' + data.location + '',
+//                     '<br/>Year: ' + data.year + '',
+//                     '</div>'].join('');
+//           }
+//         });
+
+//         $("#narrative").text(entry.narrative);
+      
+//         /*
+//         spacePressed = false;
+//         waitForIt();
+//         */
+//         //startWait();
+//         /*
+//         spacePressed = false; 
+//         while(!spacePressed) {
+//           waitForIt(); 
+//         }
+//         */
+
+
+//       });
+      
+//       /*
+//       map.bubbles(currentYearCsv, {
+//         popupTemplate: function (geo, data) {
+//           return ['<div class="hoverinfo">' +  data.name,
+//                   '<br/>Location: ' + data.location + '',
+//                   '<br/>Year: ' + data.year + '',
+//                   '</div>'].join('');
+//         }
+//       });
+
+//       currentYearCsv.forEach(function(entry) {
+//         setTimeout(function() {$("#narrative").text(entry.narrative);}, 10000);
+//       });
+// */
+
+//       currentYear = currentYear + 1;
+//     }
+//   });
+  return;
+}
+
+function toggleMandelshtam() {
+  $(".poet").css("background-color", "");
+  $("#mand").css("background-color", "yellow");
+
+  $('#narrative').text('');
+  $('#current-year').text('1914'); 
+  $('#chapter').text('0');
+
+  whichPoet = "mand";
+
+  return;
+}
+
+function toggleAkhmatova() {
+  $(".poet").css("background-color", "");
+  $("#akhm").css("background-color", "yellow");
+
+  $('#narrative').text('');
+  $('#current-year').text('1914'); 
+  $('#chapter').text('0');
+
+  whichPoet = "akhm";
+
+  return;
+}
+
+function togglePasternak() {
+  $(".poet").css("background-color", "");
+  $("#past").css("background-color", "yellow");
+
+  whichPoet = "past";
+
+  return;
+}
+
+function toggleNabokov() {
+  $(".poet").css("background-color", "");
+  $("#nabo").css("background-color", "yellow");
+
+  $('#narrative').text('');
+  $('#current-year').text('1914'); 
+  $('#chapter').text('0');
+
+  whichPoet = "nabo";
+
+  return;
+}
+
+function toggleTsvetaeva() {
+  $(".poet").css("background-color", "");
+  $("#tsve").css("background-color", "yellow");
+
+  $('#narrative').text('');
+  $('#current-year').text('1914'); 
+  $('#chapter').text('0');
+
+  whichPoet = "tsve";
+
+  return;
+}
+
+</script>
